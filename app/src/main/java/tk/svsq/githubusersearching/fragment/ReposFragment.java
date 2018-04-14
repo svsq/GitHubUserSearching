@@ -32,7 +32,6 @@ public class ReposFragment extends Fragment {
     private List<GitHubRepo> repoList;
     private String companyName;
     private RepoAdapter adapter;
-    private RecyclerView listRepos;
 
     @Nullable
     @Override
@@ -42,7 +41,7 @@ public class ReposFragment extends Fragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
 
         TextView userNameText = root.findViewById(R.id.ReposFragment_UserName);
-        listRepos = root.findViewById(R.id.ReposFragment_ListRepos);
+        RecyclerView listRepos = root.findViewById(R.id.ReposFragment_ListRepos);
         progressBar = root.findViewById(R.id.ReposFragment_ProgressBar);
 
         Bundle bundle = getArguments();

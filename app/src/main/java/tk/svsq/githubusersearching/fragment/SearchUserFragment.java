@@ -33,6 +33,8 @@ import tk.svsq.githubusersearching.model.GitHubUser;
 import tk.svsq.githubusersearching.rest.GitHubApiClient;
 import tk.svsq.githubusersearching.rest.GitHubUserCall;
 
+import static tk.svsq.githubusersearching.Util.CheckConnectivity.isInternetConnected;
+
 public class SearchUserFragment extends Fragment implements View.OnClickListener {
 
     public static final String KEY_COMPANY_NAME = "username";
@@ -74,15 +76,6 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
         return root;
     }
 
-    public static boolean isInternetConnected(Context context) {
-        ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = null;
-        if (manager != null) {
-            activeNetwork = manager.getActiveNetworkInfo();
-        }
-        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-    }
-
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -108,10 +101,9 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
                     } else {
                         Toast.makeText(getContext(), R.string.internet_connection_error, Toast.LENGTH_SHORT).show();
                     }
-                    break;
                 }
+                break;
         }
-
     }
 
     public void loadData() {
