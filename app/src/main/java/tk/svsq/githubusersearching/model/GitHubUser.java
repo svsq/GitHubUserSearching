@@ -28,6 +28,7 @@ public class GitHubUser {
     public void setUserName(String userName) {
         this.userName = userName;
     }
+    //TODO (4): Maybe not needed setters here at all
 
     public String getUserLocation() {
         return userLocation;
