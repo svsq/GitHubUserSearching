@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,25 +32,28 @@ public class ReposFragment extends Fragment {
     private List<GitHubRepo> repoList;
     private String companyName;
     private RepoAdapter adapter;
+    private RecyclerView listRepos;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_repos, container, false);
 
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+
         TextView userNameText = root.findViewById(R.id.ReposFragment_UserName);
-        RecyclerView listRepos = root.findViewById(R.id.ReposFragment_ListRepos);
+        listRepos = root.findViewById(R.id.ReposFragment_ListRepos);
         progressBar = root.findViewById(R.id.ReposFragment_ProgressBar);
 
         Bundle bundle = getArguments();
         companyName = bundle.getString(SearchUserFragment.KEY_COMPANY_NAME);
         String numberRepos = bundle.getString(SearchUserFragment.KEY_NUMBER_REPO);
-        String titleText = companyName + "repositories (" + numberRepos + ")";
+        String titleText = companyName + "'s repositories (" + numberRepos + ")";
         // TODO (1): Replace this string to resource with placeholders
         userNameText.setText(titleText);
-
         repoList = new ArrayList<>();
-        adapter = new RepoAdapter(getContext(), repoList);
+        adapter = new RepoAdapter();
+        listRepos.setLayoutManager(linearLayoutManager);
         listRepos.setAdapter(adapter);
 
         loadRepositories();
@@ -58,16 +62,19 @@ public class ReposFragment extends Fragment {
     }
 
     private void loadRepositories() {
-        Integer integer = 100; // TODO (2): Decide need for this Integer value
+        //Integer integer = 100;
         progressBar.setVisibility(ProgressBar.VISIBLE);
         GitHubRepoCall apiService = GitHubApiClient.getClient().create(GitHubRepoCall.class);
         Call<List<GitHubRepo>> call = apiService.getRepo(companyName);
+        // TODO (6): Do refactoring with replace companyName to login or somthing else
         call.enqueue(new Callback<List<GitHubRepo>>() {
             @Override
             public void onResponse(@NonNull Call<List<GitHubRepo>> call, @NonNull Response<List<GitHubRepo>> response) {
                 repoList.clear();
                 repoList.addAll(response.body());
+                adapter.addAll(repoList);
                 adapter.notifyDataSetChanged();
+
                 progressBar.setVisibility(ProgressBar.GONE);
             }
 

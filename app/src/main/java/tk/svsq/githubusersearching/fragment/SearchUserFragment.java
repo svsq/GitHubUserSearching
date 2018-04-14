@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -46,6 +47,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
     private EditText editText;
     private Button searchButton;
 
+    private String login;
     private String userName;
     private String companyName;
     private String numberRepo;
@@ -64,6 +66,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
         editText = root.findViewById(R.id.fragment_search_edittext);
         searchButton = root.findViewById(R.id.fragment_search_button);
         searchButton.setOnClickListener(this);
+        layout.setOnClickListener(this);
 
         layout.setVisibility(View.GONE);
         progressBar.setVisibility(View.GONE);
@@ -82,11 +85,31 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
 
     @Override
     public void onClick(View view) {
-        userName = editText.getText().toString();
-        if(getContext() != null) {
-            if(isInternetConnected(getContext())) {
-                loadData();
-            }
+        switch (view.getId()) {
+            case R.id.companyLayout:
+                ReposFragment reposFragment = new ReposFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString(KEY_COMPANY_NAME, userName);
+                bundle.putString(KEY_NUMBER_REPO, numberRepo);
+                reposFragment.setArguments(bundle);
+                if (getFragmentManager() != null) {
+                    getFragmentManager().beginTransaction()
+                            .replace(R.id.fragmentContainer, reposFragment)
+                            .addToBackStack("searchuserfragment")
+                            .commit();
+                }
+
+                break;
+            case R.id.fragment_search_button:
+                userName = editText.getText().toString();
+                if (getContext() != null) {
+                    if (isInternetConnected(getContext())) {
+                        loadData();
+                    } else {
+                        Toast.makeText(getContext(), R.string.internet_connection_error, Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+                }
         }
 
     }
@@ -98,20 +121,21 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
         call.enqueue(new Callback<GitHubUser>() {
             @Override
             public void onResponse(@NonNull Call<GitHubUser> call, @NonNull Response<GitHubUser> response) {
-                if(response.body() != null) {
+                if (response.body() != null) {
                     progressBar.setVisibility(View.GONE);
                     layout.setVisibility(View.VISIBLE);
-                    if (response.body().getUserName() != null) {
+                    if (response.body().getUserName() != null) {  // TODO (5): Try to fix this statement
                         userNameText.setText(response.body().getUserName());
                     }
                     userLocationText.setText(response.body().getUserLocation());
                     userBlogText.setText(response.body().getUserBlog());
                     Picasso.get()
                             .load(response.body().getUserAvatar())
-                            .resize(150,150)
+                            .resize(150, 150)
                             .into(userAvatar);
                     companyName = response.body().getUserName();
                     numberRepo = response.body().getUserRepos();
+                    login = response.body().getLogin();
                 } else {
                     progressBar.setVisibility(View.GONE);
                 }

@@ -16,14 +16,12 @@ import tk.svsq.githubusersearching.model.GitHubRepo;
 public class RepoAdapter extends RecyclerView.Adapter<RecyclerViewHolder> {
 
     private List<GitHubRepo> repoList = new ArrayList<>();
-    private LayoutInflater inflater;
-    private Context context;
 
-    public RepoAdapter(Context context, List<GitHubRepo> repoList) {
+    /*public RepoAdapter(Context context, List<GitHubRepo> repoList) {
         this.repoList = repoList;
         this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.context = context;
-    }
+    }*/
 
     @NonNull
     @Override
@@ -43,7 +41,7 @@ public class RepoAdapter extends RecyclerView.Adapter<RecyclerViewHolder> {
         return repoList.size();
     }
 
-    public void addAll(List<GitHubRepo> rpeoList) {
+    public void addAll(List<GitHubRepo> repoList) {
         int position = getItemCount();
         this.repoList.addAll(repoList);
         notifyItemRangeInserted(position, this.repoList.size());

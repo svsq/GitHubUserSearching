@@ -8,6 +8,6 @@ import retrofit2.http.Path;
 import tk.svsq.githubusersearching.model.GitHubRepo;
 
 public interface GitHubRepoCall {
-    @GET("/users/{user}/repos")
-    Call<List<GitHubRepo>> getRepo(@Path("user") String name);
+    @GET("/users/{login}/repos")
+    Call<List<GitHubRepo>> getRepo(@Path("login") String name);
 }

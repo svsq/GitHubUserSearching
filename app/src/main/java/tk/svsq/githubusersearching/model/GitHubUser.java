@@ -3,6 +3,8 @@ package tk.svsq.githubusersearching.model;
 import com.google.gson.annotations.SerializedName;
 
 public class GitHubUser {
+    @SerializedName("login")
+    private String login;
     @SerializedName("name")
     private String userName;
     @SerializedName("location")
@@ -14,7 +16,8 @@ public class GitHubUser {
     @SerializedName("public_repos")
     private String userRepos;
 
-    public GitHubUser(String userName, String userLocation, String userAvatar, String userBlog) {
+    public GitHubUser(String login, String userName, String userLocation, String userAvatar, String userBlog) {
+        this.login = login;
         this.userName = userName;
         this.userLocation = userLocation;
         this.userAvatar = userAvatar;
@@ -60,5 +63,13 @@ public class GitHubUser {
 
     public void setUserRepos(String userRepos) {
         this.userRepos = userRepos;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
     }
 }
