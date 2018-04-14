@@ -34,12 +34,11 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/fragment_search_recyclerview"
+    <FrameLayout
+        android:id="@+id/companyLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="10dp">
-
-    </android.support.v7.widget.RecyclerView>
+        android:layout_height="wrap_content">
+        <include layout="@layout/item_user_cardview" />
+    </FrameLayout>
 
 </LinearLayout>
