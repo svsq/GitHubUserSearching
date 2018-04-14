@@ -1,6 +1,5 @@
 package tk.svsq.githubusersearching.adapter;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,26 +12,20 @@ import java.util.List;
 import tk.svsq.githubusersearching.R;
 import tk.svsq.githubusersearching.model.GitHubRepo;
 
-public class RepoAdapter extends RecyclerView.Adapter<RecyclerViewHolder> {
+public class RepoAdapter extends RecyclerView.Adapter<RepoViewHolder> {
 
     private List<GitHubRepo> repoList = new ArrayList<>();
 
-    /*public RepoAdapter(Context context, List<GitHubRepo> repoList) {
-        this.repoList = repoList;
-        this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        this.context = context;
-    }*/
-
     @NonNull
     @Override
-    public RecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RepoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_repos_cardview, parent, false);
-        return new RecyclerViewHolder(view);
+        return new RepoViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RepoViewHolder holder, int position) {
         holder.bind(repoList.get(position));
     }
 

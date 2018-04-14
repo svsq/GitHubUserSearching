@@ -1,14 +1,9 @@
 package tk.svsq.githubusersearching.fragment;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,18 +12,20 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import tk.svsq.githubusersearching.R;
+import tk.svsq.githubusersearching.adapter.UsersAdapter;
 import tk.svsq.githubusersearching.model.GitHubUser;
 import tk.svsq.githubusersearching.rest.GitHubApiClient;
 import tk.svsq.githubusersearching.rest.GitHubUserCall;
@@ -40,7 +37,12 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
     public static final String KEY_COMPANY_NAME = "username";
     public static final String KEY_NUMBER_REPO = "number_repo";
 
-    private FrameLayout layout;
+    private RecyclerView usersList;
+    private UsersAdapter adapter;
+
+    private List<GitHubUser> users;
+
+    //private FrameLayout layout;
     private ImageView userAvatar;
     private TextView userNameText;
     private TextView userLocationText;
@@ -59,12 +61,18 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View root = inflater.inflate(R.layout.fragment_search_user, container, false);
-        layout = root.findViewById(R.id.companyLayout);
-        userAvatar = root.findViewById(R.id.user_avatar);
+        //layout = root.findViewById(R.id.fragment_users_list);
+        users = new ArrayList<>();
+        usersList = root.findViewById(R.id.fragment_users_list);
+        adapter = new UsersAdapter();
+        usersList.setAdapter(adapter);
+
+        /*userAvatar = root.findViewById(R.id.user_avatar);
         userNameText = root.findViewById(R.id.user_name);
         userLocationText = root.findViewById(R.id.user_location);
         userBlogText = root.findViewById(R.id.user_blog);
-        progressBar = root.findViewById(R.id.fragment_search_progressBar);
+        progressBar = root.findViewById(R.id.fragment_search_progressBar);*/
+
         editText = root.findViewById(R.id.fragment_search_edittext);
         searchButton = root.findViewById(R.id.fragment_search_button);
         searchButton.setOnClickListener(this);
@@ -79,7 +87,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.companyLayout:
+            case R.id.fragment_users_list:
                 ReposFragment reposFragment = new ReposFragment();
                 Bundle bundle = new Bundle();
                 bundle.putString(KEY_COMPANY_NAME, userName);
@@ -116,7 +124,9 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
                 if (response.body() != null) {
                     progressBar.setVisibility(View.GONE);
                     layout.setVisibility(View.VISIBLE);
-                    if (response.body().getUserName() != null) {  // TODO (5): Try to fix this statement
+                    users.clear();
+                    users.addAll(response.body().get) // TODO (main): must complete listview from users
+                    /*if (response.body().getUserName() != null) {  // TODO (5): Try to fix this statement
                         userNameText.setText(response.body().getUserName());
                     }
                     userLocationText.setText(response.body().getUserLocation());
@@ -124,7 +134,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
                     Picasso.get()
                             .load(response.body().getUserAvatar())
                             .resize(150, 150)
-                            .into(userAvatar);
+                            .into(userAvatar);*/
                     companyName = response.body().getUserName();
                     numberRepo = response.body().getUserRepos();
                     login = response.body().getLogin();
