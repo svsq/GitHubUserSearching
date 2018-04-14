@@ -24,6 +24,10 @@ public class GitHubUser {
         this.userBlog = userBlog;
     }
 
+    public GitHubUser() {
+
+    }
+
     public String getUserName() {
         return userName;
     }

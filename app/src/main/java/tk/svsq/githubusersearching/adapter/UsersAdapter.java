@@ -14,7 +14,7 @@ import tk.svsq.githubusersearching.model.GitHubUser;
 
 public class UsersAdapter extends RecyclerView.Adapter<UsersViewHolder>{
 
-    private List<GitHubUser> usersList = new ArrayList<>();
+    private List<GitHubUser> users = new ArrayList<>();
 
     @NonNull
     @Override
@@ -26,17 +26,17 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersViewHolder>{
 
     @Override
     public void onBindViewHolder(@NonNull UsersViewHolder holder, int position) {
-        holder.bind(usersList.get(position));
+        holder.bind(users.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return usersList.size();
+        return users.size();
     }
 
     public void addAll(List<GitHubUser> userList) {
         int position = getItemCount();
-        this.usersList.addAll(userList);
-        notifyItemRangeInserted(position, this.usersList.size());
+        this.users.addAll(userList);
+        notifyItemRangeInserted(position, this.users.size());
     }
 }

@@ -30,7 +30,7 @@ public class ReposFragment extends Fragment {
     private ProgressBar progressBar;
 
     private List<GitHubRepo> repoList;
-    private String companyName;
+    private String companyName; // TODO (7): Rename this to login
     private RepoAdapter adapter;
 
     @Nullable
@@ -40,16 +40,16 @@ public class ReposFragment extends Fragment {
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
 
-        TextView userNameText = root.findViewById(R.id.ReposFragment_UserName);
+        //TextView userNameText = root.findViewById(R.id.ReposFragment_UserName);
         RecyclerView listRepos = root.findViewById(R.id.ReposFragment_ListRepos);
         progressBar = root.findViewById(R.id.ReposFragment_ProgressBar);
 
         Bundle bundle = getArguments();
         companyName = bundle.getString(SearchUserFragment.KEY_COMPANY_NAME);
-        String numberRepos = bundle.getString(SearchUserFragment.KEY_NUMBER_REPO);
-        String titleText = companyName + "'s repositories (" + numberRepos + ")";
+        //String numberRepos = bundle.getString(SearchUserFragment.KEY_NUMBER_REPO);
+        //String titleText = companyName + "'s repositories (" + numberRepos + ")";
         // TODO (1): Replace this string to resource with placeholders
-        userNameText.setText(titleText);
+        //userNameText.setText(titleText);
         repoList = new ArrayList<>();
         adapter = new RepoAdapter();
         listRepos.setLayoutManager(linearLayoutManager);
