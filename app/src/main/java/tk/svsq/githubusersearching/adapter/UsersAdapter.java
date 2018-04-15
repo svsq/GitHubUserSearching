@@ -39,4 +39,16 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersViewHolder>{
         this.users.addAll(userList);
         notifyItemRangeInserted(position, this.users.size());
     }
+
+    public void clearAll() {
+        int position = getItemCount();
+        this.users.clear();
+        notifyItemRangeRemoved(position, this.getItemCount());
+    }
+
+    public void add(List<GitHubUser> userList) {
+        int position = getItemCount();
+        this.users.add(userList.get(position));
+        notifyItemChanged(position);
+    }
 }

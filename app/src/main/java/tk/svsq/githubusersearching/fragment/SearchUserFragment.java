@@ -11,9 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -27,6 +25,7 @@ import tk.svsq.githubusersearching.adapter.UsersAdapter;
 import tk.svsq.githubusersearching.model.GitHubSearchResult;
 import tk.svsq.githubusersearching.model.GitHubUser;
 import tk.svsq.githubusersearching.rest.GitHubApiClient;
+import tk.svsq.githubusersearching.rest.GitHubSearchUserCall;
 import tk.svsq.githubusersearching.rest.GitHubUserCall;
 
 import static tk.svsq.githubusersearching.Util.CheckConnectivity.isInternetConnected;
@@ -105,21 +104,42 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
 
     public void loadUsers() {
         progressBar.setVisibility(View.VISIBLE);
-        final GitHubUserCall apiService = GitHubApiClient.getClient().create(GitHubUserCall.class);
-        Call<GitHubSearchResult> call = apiService.getUsers(userQuery);
+        users.clear();
+        adapter.clearAll();
+        final GitHubSearchUserCall searchApiService = GitHubApiClient.getClient().create(GitHubSearchUserCall.class);
+        final GitHubUserCall userApiService = GitHubApiClient.getClient().create(GitHubUserCall.class);
+        Call<GitHubSearchResult> call = searchApiService.getUsers(userQuery);
         call.enqueue(new Callback<GitHubSearchResult>() {
             @Override
-            public void onResponse(@NonNull Call<GitHubSearchResult> call, @NonNull Response<GitHubSearchResult> response) {
+            public void onResponse(@NonNull Call<GitHubSearchResult> call,
+                                   @NonNull Response<GitHubSearchResult> response) {
                 if (response.body() != null) {
-                    usersList.setVisibility(View.VISIBLE);
-                    users.clear();
-                    users.addAll(response.body().getItems());
-                    adapter.addAll(users);
-                    adapter.notifyDataSetChanged();
-                    // TODO (8) --> IMPORTANT! Investigate why almost all fields coming with null (instead of login and avatar)
-                    Toast.makeText(getContext(), getString(R.string.toast_show_results) + users.size(), Toast.LENGTH_SHORT).show();
-                    progressBar.setVisibility(View.GONE);
+                    for (int i = 0; i < response.body().getItems().size(); i++) {
+                        Call<GitHubUser> callUser = userApiService.getUser(response.body()
+                                .getItems().get(i).getLogin());
+                        callUser.enqueue(new Callback<GitHubUser>() {
+                            @Override
+                            public void onResponse(@NonNull Call<GitHubUser> call2,
+                                                   @NonNull Response<GitHubUser> response2) {
+                                if (response2.body() != null) {
+                                    usersList.setVisibility(View.VISIBLE);
+                                    users.add(response2.body());
+                                }
+
+                                adapter.add(users);
+                                adapter.notifyDataSetChanged();
+                            }
+
+                            @Override
+                            public void onFailure(Call<GitHubUser> call, Throwable t) {
+
+                            }
+                        });
+                    }
+
+
                 }
+                progressBar.setVisibility(View.GONE);
             }
 
             @Override
@@ -127,6 +147,5 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
 
             }
         });
-
     }
 }
