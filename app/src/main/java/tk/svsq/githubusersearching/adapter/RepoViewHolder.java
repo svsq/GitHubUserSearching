@@ -7,13 +7,13 @@ import android.widget.TextView;
 import tk.svsq.githubusersearching.R;
 import tk.svsq.githubusersearching.model.GitHubRepo;
 
-class RecyclerViewHolder extends RecyclerView.ViewHolder {
+class RepoViewHolder extends RecyclerView.ViewHolder {
 
     private TextView repoName;
     private TextView repoDescription;
     private TextView repoLanguage;
 
-    public RecyclerViewHolder(View itemView) {
+    public RepoViewHolder(View itemView) {
         super(itemView);
         repoName = itemView.findViewById(R.id.item_repoName);
         repoDescription = itemView.findViewById(R.id.item_repoDesc);

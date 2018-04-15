@@ -8,5 +8,5 @@ import tk.svsq.githubusersearching.model.GitHubUser;
 public interface GitHubUserCall {
 
     @GET("/users/{user}")
-    Call<GitHubUser> getUser(@Path("user") String user);
+    Call<GitHubUser> getUser(@Path("user")String user);
 }
