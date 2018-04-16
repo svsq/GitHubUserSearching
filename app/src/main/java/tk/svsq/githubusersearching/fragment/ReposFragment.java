@@ -28,7 +28,7 @@ public class ReposFragment extends Fragment {
     private ProgressBar progressBar;
 
     private List<GitHubRepo> repoList;
-    private String companyName; // TODO (7): Rename this to login
+    private String currentLogin; // TODO (7): Rename this to login
     private RepoAdapter adapter;
 
     @Nullable
@@ -43,9 +43,9 @@ public class ReposFragment extends Fragment {
         progressBar = root.findViewById(R.id.ReposFragment_ProgressBar);
 
         Bundle bundle = getArguments();
-        companyName = bundle.getString(SearchUserFragment.KEY_COMPANY_NAME);
+        currentLogin = bundle.getString(SearchUserFragment.KEY_CURRENT_LOGIN);
         //String numberRepos = bundle.getString(SearchUserFragment.KEY_NUMBER_REPO);
-        //String titleText = companyName + "'s repositories (" + numberRepos + ")";
+        //String titleText = currentLogin + "'s repositories (" + numberRepos + ")";
         // TODO (1): Replace this string to resource with placeholders
         //userNameText.setText(titleText);
         repoList = new ArrayList<>();
@@ -61,8 +61,8 @@ public class ReposFragment extends Fragment {
     private void loadRepositories() {
         progressBar.setVisibility(ProgressBar.VISIBLE);
         GitHubCall apiService = GitHubApiClient.getClient().create(GitHubCall.class);
-        Call<List<GitHubRepo>> call = apiService.getRepo(companyName);
-        // TODO (6): Do refactoring with replace companyName to login or somthing else
+        Call<List<GitHubRepo>> call = apiService.getRepo(currentLogin);
+        // TODO (6): Do refactoring with replace currentLogin to login or somthing else
         call.enqueue(new Callback<List<GitHubRepo>>() {
             @Override
             public void onResponse(@NonNull Call<List<GitHubRepo>> call, @NonNull Response<List<GitHubRepo>> response) {
