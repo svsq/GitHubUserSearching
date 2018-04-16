@@ -16,19 +16,11 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersViewHolder>{
 
     private List<GitHubUser> users = new ArrayList<>();
 
-    private final View.OnClickListener onClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            
-        }
-    };
-
     @NonNull
     @Override
     public UsersViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_user_cardview, parent, false);
-        view.setOnClickListener(onClickListener);
         return new UsersViewHolder(view);
     }
 
