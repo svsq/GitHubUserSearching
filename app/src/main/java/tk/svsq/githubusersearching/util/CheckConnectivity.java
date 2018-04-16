@@ -1,4 +1,4 @@
-package tk.svsq.githubusersearching.Util;
+package tk.svsq.githubusersearching.util;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
