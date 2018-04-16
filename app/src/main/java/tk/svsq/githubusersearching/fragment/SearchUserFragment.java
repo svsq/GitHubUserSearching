@@ -21,6 +21,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import tk.svsq.githubusersearching.R;
+import tk.svsq.githubusersearching.adapter.RecyclerViewClickListener;
 import tk.svsq.githubusersearching.adapter.UsersAdapter;
 import tk.svsq.githubusersearching.model.GitHubSearchResult;
 import tk.svsq.githubusersearching.model.GitHubUser;
@@ -55,8 +56,15 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
 
         users = new ArrayList<>();
         usersList = root.findViewById(R.id.fragment_users_list);
-        adapter = new UsersAdapter();
+        usersList.setHasFixedSize(true);
         usersList.setLayoutManager(linearLayoutManager);
+
+        RecyclerViewClickListener listener = (usersList, position) ->
+                Toast.makeText(getContext(), "Position: " + position, Toast.LENGTH_SHORT).show();
+
+
+        adapter = new UsersAdapter(listener);
+
         usersList.setAdapter(adapter);
 
         progressBar = root.findViewById(R.id.fragment_search_progressBar);
@@ -64,7 +72,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
         editText = root.findViewById(R.id.fragment_search_edittext);
         Button searchButton = root.findViewById(R.id.fragment_search_button);
         searchButton.setOnClickListener(this);
-        usersList.setOnClickListener(this);
+        //usersList.setOnClickListener(this);
 
         usersList.setVisibility(View.GONE);
         progressBar.setVisibility(View.GONE);

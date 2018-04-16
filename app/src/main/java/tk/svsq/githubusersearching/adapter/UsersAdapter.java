@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,16 +13,21 @@ import java.util.List;
 import tk.svsq.githubusersearching.R;
 import tk.svsq.githubusersearching.model.GitHubUser;
 
-public class UsersAdapter extends RecyclerView.Adapter<UsersViewHolder>{
+public class UsersAdapter extends RecyclerView.Adapter<UsersViewHolder> {
 
     private List<GitHubUser> users = new ArrayList<>();
+    private RecyclerViewClickListener mListener;
+
+    public UsersAdapter(RecyclerViewClickListener listener) {
+        mListener = listener;
+    }
 
     @NonNull
     @Override
     public UsersViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_user_cardview, parent, false);
-        return new UsersViewHolder(view);
+        return new UsersViewHolder(view, mListener);
     }
 
     @Override
