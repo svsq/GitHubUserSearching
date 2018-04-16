@@ -25,10 +25,9 @@ import tk.svsq.githubusersearching.adapter.UsersAdapter;
 import tk.svsq.githubusersearching.model.GitHubSearchResult;
 import tk.svsq.githubusersearching.model.GitHubUser;
 import tk.svsq.githubusersearching.rest.GitHubApiClient;
-import tk.svsq.githubusersearching.rest.GitHubSearchUserCall;
-import tk.svsq.githubusersearching.rest.GitHubUserCall;
+import tk.svsq.githubusersearching.rest.GitHubCall;
 
-import static tk.svsq.githubusersearching.Util.CheckConnectivity.isInternetConnected;
+import static tk.svsq.githubusersearching.util.CheckConnectivity.isInternetConnected;
 
 public class SearchUserFragment extends Fragment implements View.OnClickListener {
 
@@ -106,16 +105,16 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
         progressBar.setVisibility(View.VISIBLE);
         users.clear();
         adapter.clearAll();
-        final GitHubSearchUserCall searchApiService = GitHubApiClient.getClient().create(GitHubSearchUserCall.class);
-        final GitHubUserCall userApiService = GitHubApiClient.getClient().create(GitHubUserCall.class);
-        Call<GitHubSearchResult> call = searchApiService.getUsers(userQuery);
+        //adapter.notifyAll();
+        final GitHubCall apiService = GitHubApiClient.getClient().create(GitHubCall.class);
+        Call<GitHubSearchResult> call = apiService.getUsers(userQuery);
         call.enqueue(new Callback<GitHubSearchResult>() {
             @Override
             public void onResponse(@NonNull Call<GitHubSearchResult> call,
                                    @NonNull Response<GitHubSearchResult> response) {
                 if (response.body() != null) {
                     for (int i = 0; i < response.body().getItems().size(); i++) {
-                        Call<GitHubUser> callUser = userApiService.getUser(response.body()
+                        Call<GitHubUser> callUser = apiService.getUser(response.body()
                                 .getItems().get(i).getLogin());
                         callUser.enqueue(new Callback<GitHubUser>() {
                             @Override
@@ -147,5 +146,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
 
             }
         });
+
+
     }
 }

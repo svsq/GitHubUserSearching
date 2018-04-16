@@ -9,9 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +21,7 @@ import tk.svsq.githubusersearching.R;
 import tk.svsq.githubusersearching.adapter.RepoAdapter;
 import tk.svsq.githubusersearching.model.GitHubRepo;
 import tk.svsq.githubusersearching.rest.GitHubApiClient;
-import tk.svsq.githubusersearching.rest.GitHubRepoCall;
+import tk.svsq.githubusersearching.rest.GitHubCall;
 
 public class ReposFragment extends Fragment {
 
@@ -61,9 +59,8 @@ public class ReposFragment extends Fragment {
     }
 
     private void loadRepositories() {
-        //Integer integer = 100;
         progressBar.setVisibility(ProgressBar.VISIBLE);
-        GitHubRepoCall apiService = GitHubApiClient.getClient().create(GitHubRepoCall.class);
+        GitHubCall apiService = GitHubApiClient.getClient().create(GitHubCall.class);
         Call<List<GitHubRepo>> call = apiService.getRepo(companyName);
         // TODO (6): Do refactoring with replace companyName to login or somthing else
         call.enqueue(new Callback<List<GitHubRepo>>() {

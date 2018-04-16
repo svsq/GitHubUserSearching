@@ -49,6 +49,6 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersViewHolder>{
     public void add(List<GitHubUser> userList) {
         int position = getItemCount();
         this.users.add(userList.get(position));
-        notifyItemChanged(position);
+        notifyItemInserted(position);
     }
 }
