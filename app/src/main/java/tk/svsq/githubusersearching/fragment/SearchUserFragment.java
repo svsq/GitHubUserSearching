@@ -31,7 +31,7 @@ import static tk.svsq.githubusersearching.util.CheckConnectivity.isInternetConne
 
 public class SearchUserFragment extends Fragment implements View.OnClickListener {
 
-    public static final String KEY_COMPANY_NAME = "username";
+    public static final String KEY_CURRENT_LOGIN = "username";
     //public static final String KEY_NUMBER_REPO = "number_repo";
 
     private RecyclerView usersList;
@@ -43,6 +43,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
     private EditText editText;
 
     private String userQuery;
+    private String currentLogin;
 
     @Nullable
     @Override
@@ -63,7 +64,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
         editText = root.findViewById(R.id.fragment_search_edittext);
         Button searchButton = root.findViewById(R.id.fragment_search_button);
         searchButton.setOnClickListener(this);
-        //usersList.setOnClickListener(this);
+        usersList.setOnClickListener(this);
 
         usersList.setVisibility(View.GONE);
         progressBar.setVisibility(View.GONE);
@@ -77,7 +78,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
             case R.id.fragment_users_list:
                 ReposFragment reposFragment = new ReposFragment();
                 Bundle bundle = new Bundle();
-                bundle.putString(KEY_COMPANY_NAME, userQuery);
+                bundle.putString(KEY_CURRENT_LOGIN, currentLogin);
                 //bundle.putString(KEY_NUMBER_REPO, numberRepo);
                 reposFragment.setArguments(bundle);
                 if (getFragmentManager() != null) {
@@ -86,7 +87,6 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
                             .addToBackStack("searchuserfragment")
                             .commit();
                 }
-
                 break;
             case R.id.fragment_search_button:
                 userQuery = editText.getText().toString();
@@ -94,7 +94,8 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
                     if (isInternetConnected(getContext())) {
                         loadUsers();
                     } else {
-                        Toast.makeText(getContext(), R.string.internet_connection_error, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), R.string.internet_connection_error,
+                                Toast.LENGTH_SHORT).show();
                     }
                 }
                 break;
@@ -105,40 +106,50 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
         progressBar.setVisibility(View.VISIBLE);
         users.clear();
         adapter.clearAll();
-        //adapter.notifyAll();
         final GitHubCall apiService = GitHubApiClient.getClient().create(GitHubCall.class);
         Call<GitHubSearchResult> call = apiService.getUsers(userQuery);
         call.enqueue(new Callback<GitHubSearchResult>() {
             @Override
             public void onResponse(@NonNull Call<GitHubSearchResult> call,
-                                   @NonNull Response<GitHubSearchResult> response) {
-                if (response.body() != null) {
-                    for (int i = 0; i < response.body().getItems().size(); i++) {
-                        Call<GitHubUser> callUser = apiService.getUser(response.body()
-                                .getItems().get(i).getLogin());
-                        callUser.enqueue(new Callback<GitHubUser>() {
-                            @Override
-                            public void onResponse(@NonNull Call<GitHubUser> call2,
-                                                   @NonNull Response<GitHubUser> response2) {
-                                if (response2.body() != null) {
-                                    usersList.setVisibility(View.VISIBLE);
-                                    users.add(response2.body());
+                                   @NonNull final Response<GitHubSearchResult> response) {
+                if (response.isSuccessful()) {
+                    if (response.body() != null) {
+                        for (int i = 0; i < response.body().getItems().size(); i++) {
+                            Call<GitHubUser> callUser = apiService.getUser(response.body()
+                                    .getItems().get(i).getLogin());
+                            callUser.enqueue(new Callback<GitHubUser>() {
+                                @Override
+                                public void onResponse(@NonNull Call<GitHubUser> call2,
+                                                       @NonNull Response<GitHubUser> response2) {
+                                    if (response.isSuccessful()) {
+                                        if (response2.body() != null) {
+                                            usersList.setVisibility(View.VISIBLE);
+                                            users.add(response2.body());
+                                        }
+
+                                        adapter.add(users);
+                                        adapter.notifyDataSetChanged();
+                                        currentLogin = response2.body().getLogin();
+                                    } else {
+                                        Toast.makeText(getContext(), String.valueOf(response.code()),
+                                                Toast.LENGTH_SHORT).show();
+                                    }
                                 }
 
-                                adapter.add(users);
-                                adapter.notifyDataSetChanged();
-                            }
+                                @Override
+                                public void onFailure(Call<GitHubUser> call, Throwable t) {
 
-                            @Override
-                            public void onFailure(Call<GitHubUser> call, Throwable t) {
+                                }
+                            });
+                        }
 
-                            }
-                        });
+
                     }
-
-
+                    progressBar.setVisibility(View.GONE);
+                } else {
+                    Toast.makeText(getContext(), String.valueOf(response.code()),
+                            Toast.LENGTH_SHORT).show();
                 }
-                progressBar.setVisibility(View.GONE);
             }
 
             @Override
