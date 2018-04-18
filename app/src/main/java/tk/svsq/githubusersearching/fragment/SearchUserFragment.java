@@ -33,6 +33,7 @@ import static tk.svsq.githubusersearching.util.CheckConnectivity.isInternetConne
 public class SearchUserFragment extends Fragment implements View.OnClickListener {
 
     public static final String KEY_CURRENT_LOGIN = "username";
+    public static final int CODE_FORBIDDEN = 403;
     //public static final String KEY_NUMBER_REPO = "number_repo";
 
     private RecyclerView usersList;
@@ -75,21 +76,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            /*case R.id.fragment_users_list:
-                ReposFragment reposFragment = new ReposFragment();
-                Bundle bundle = new Bundle();
-                bundle.putString(KEY_CURRENT_LOGIN, currentLogin);
-                //bundle.putString(KEY_NUMBER_REPO, numberRepo);
-                reposFragment.setArguments(bundle);
-                if (getFragmentManager() != null) {
-                    getFragmentManager().beginTransaction()
-                            .replace(R.id.fragmentContainer, reposFragment)
-                            .addToBackStack("searchuserfragment")
-                            .commit();
-                }
-                break;*/
-            case R.id.fragment_search_button:
+        if (view.getId() == R.id.fragment_search_button) {
                 userQuery = editText.getText().toString();
                 if (getContext() != null) {
                     if (isInternetConnected(getContext())) {
@@ -99,7 +86,6 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
                                 Toast.LENGTH_SHORT).show();
                     }
                 }
-                break;
         }
     }
 
@@ -116,21 +102,26 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
                 if (response.isSuccessful()) {
                     if (response.body() != null) {
                         for (int i = 0; i < response.body().getItems().size(); i++) {
-                            //currentLogin = response.body().getItems().get(i).getLogin();
                             Call<GitHubUser> callUser = apiService.getUser(response.body()
                                     .getItems().get(i).getLogin());
                             callUser.enqueue(new Callback<GitHubUser>() {
                                 @Override
                                 public void onResponse(@NonNull Call<GitHubUser> call2,
                                                        @NonNull Response<GitHubUser> response2) {
-                                    if (response.isSuccessful()) {
-                                        if (response2.body() != null) {
-                                            usersList.setVisibility(View.VISIBLE);
-                                            users.add(response2.body());
+                                    if (response2.code() != CODE_FORBIDDEN) {
+                                        if (response.isSuccessful()) {
+                                            if (response2.body() != null) {
+                                                usersList.setVisibility(View.VISIBLE);
+                                                users.add(response2.body());
+                                                adapter.add(users);
+                                                adapter.notifyDataSetChanged();
+                                            } else {
+                                                Toast.makeText(getContext(), String.valueOf(response.code()),
+                                                        Toast.LENGTH_SHORT).show();
+                                            }
                                         }
 
-                                        adapter.add(users);
-                                        adapter.notifyDataSetChanged();
+
                                         adapter.setOnItemClickListener(new UsersAdapter.OnItemClickListener() {
                                             @Override
                                             public void onItemClick(View currentView, String loginOut, String loginIn) {
@@ -150,8 +141,8 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
                                         });
 
                                     } else {
-                                        Toast.makeText(getContext(), String.valueOf(response.code()),
-                                                Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getContext(), "Error: " + String.valueOf(response2.code())
+                                                        + " " + response2.message(), Toast.LENGTH_SHORT).show();
                                     }
                                 }
 
