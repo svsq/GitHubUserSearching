@@ -52,18 +52,11 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
         super.onCreateView(inflater, container, savedInstanceState);
         View root = inflater.inflate(R.layout.fragment_search_user, container, false);
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-
         users = new ArrayList<>();
         usersList = root.findViewById(R.id.fragment_users_list);
-        usersList.setHasFixedSize(true);
-        usersList.setLayoutManager(linearLayoutManager);
+        usersList.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        RecyclerViewClickListener listener = (usersList, position) ->
-                Toast.makeText(getContext(), "Position: " + position, Toast.LENGTH_SHORT).show();
-
-
-        adapter = new UsersAdapter(listener);
+        adapter = new UsersAdapter();
 
         usersList.setAdapter(adapter);
 
@@ -83,7 +76,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.fragment_users_list:
+            /*case R.id.fragment_users_list:
                 ReposFragment reposFragment = new ReposFragment();
                 Bundle bundle = new Bundle();
                 bundle.putString(KEY_CURRENT_LOGIN, currentLogin);
@@ -95,7 +88,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
                             .addToBackStack("searchuserfragment")
                             .commit();
                 }
-                break;
+                break;*/
             case R.id.fragment_search_button:
                 userQuery = editText.getText().toString();
                 if (getContext() != null) {
@@ -123,6 +116,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
                 if (response.isSuccessful()) {
                     if (response.body() != null) {
                         for (int i = 0; i < response.body().getItems().size(); i++) {
+                            //currentLogin = response.body().getItems().get(i).getLogin();
                             Call<GitHubUser> callUser = apiService.getUser(response.body()
                                     .getItems().get(i).getLogin());
                             callUser.enqueue(new Callback<GitHubUser>() {
@@ -137,7 +131,24 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
 
                                         adapter.add(users);
                                         adapter.notifyDataSetChanged();
-                                        currentLogin = response2.body().getLogin();
+                                        adapter.setOnItemClickListener(new UsersAdapter.OnItemClickListener() {
+                                            @Override
+                                            public void onItemClick(View currentView, String loginOut, String loginIn) {
+                                                currentLogin = loginOut;
+                                                ReposFragment reposFragment = new ReposFragment();
+                                                Bundle bundle = new Bundle();
+                                                bundle.putString(KEY_CURRENT_LOGIN, currentLogin);
+                                                //bundle.putString(KEY_NUMBER_REPO, numberRepo);
+                                                reposFragment.setArguments(bundle);
+                                                if (getFragmentManager() != null) {
+                                                    getFragmentManager().beginTransaction()
+                                                            .replace(R.id.fragmentContainer, reposFragment)
+                                                            .addToBackStack("searchuserfragment")
+                                                            .commit();
+                                                }
+                                            }
+                                        });
+
                                     } else {
                                         Toast.makeText(getContext(), String.valueOf(response.code()),
                                                 Toast.LENGTH_SHORT).show();

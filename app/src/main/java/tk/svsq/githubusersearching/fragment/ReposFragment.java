@@ -67,9 +67,11 @@ public class ReposFragment extends Fragment {
             @Override
             public void onResponse(@NonNull Call<List<GitHubRepo>> call, @NonNull Response<List<GitHubRepo>> response) {
                 repoList.clear();
-                repoList.addAll(response.body());
-                adapter.addAll(repoList);
-                adapter.notifyDataSetChanged();
+                if (response.body() != null) {
+                    repoList.addAll(response.body());
+                    adapter.addAll(repoList);
+                    adapter.notifyDataSetChanged();
+                }
 
                 progressBar.setVisibility(ProgressBar.GONE);
             }
