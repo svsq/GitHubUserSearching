@@ -41,6 +41,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
     UsersAdapter adapter;
 
     List<GitHubUser> users;
+    List<GitHubUser> logins;
 
     ProgressBar progressBar;
     EditText editText;
@@ -55,6 +56,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
         View root = inflater.inflate(R.layout.fragment_search_user, container, false);
 
         users = new ArrayList<>();
+        logins = new ArrayList<>();
         usersList = root.findViewById(R.id.fragment_users_list);
         usersList.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -78,6 +80,10 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.fragment_search_button) {
+            progressBar.setVisibility(View.VISIBLE);
+            users.clear();
+            logins.clear();
+            adapter.clearAll();
             userQuery = editText.getText().toString();
             if (getContext() != null) {
                 if (isInternetConnected(getContext())) {
@@ -92,10 +98,6 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
 
     public void loadSearchResults() {
 
-        progressBar.setVisibility(View.VISIBLE);
-        users.clear();
-        adapter.clearAll();
-
         Call<GitHubSearchResult> call = apiService.getUsers(userQuery);
 
         call.enqueue(new Callback<GitHubSearchResult>() {
@@ -106,8 +108,8 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
                     if (response.body() != null) {
                         // add all items from response.body to users array list
                         usersList.setVisibility(View.VISIBLE);
-                        users.addAll(response.body().getItems());
-                        for (int i = 0; i < users.size(); i++) {
+                        logins.addAll(response.body().getItems());
+                        for (int i = 0; i < logins.size(); i++) {
                             loadUser(i);
                             //adapter.add(users);
                             //adapter.notifyDataSetChanged();
@@ -149,7 +151,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
 
     public void loadUser(int position) {
 
-        Call<GitHubUser> callUser = apiService.getUser(users.get(position).getLogin());
+        Call<GitHubUser> callUser = apiService.getUser(logins.get(position).getLogin());
 
         callUser.enqueue(new Callback<GitHubUser>() {
             @Override
@@ -158,13 +160,13 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
                 if (response.code() != CODE_FORBIDDEN) {
                     if (response.body() != null) {
                         usersList.setVisibility(View.VISIBLE);
-                        users.add(position, response.body());
+                        users.add(response.body());
                         //users.add(response.body());
                         adapter.add(users);
                         adapter.notifyDataSetChanged();
-                    } else {
-                        errorMessage(response.code(), response.message());
                     }
+                } else {
+                    errorMessage(response.code(), response.message());
                 }
             }
 
