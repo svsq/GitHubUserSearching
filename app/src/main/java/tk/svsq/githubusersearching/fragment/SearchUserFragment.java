@@ -81,7 +81,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
             userQuery = editText.getText().toString();
             if (getContext() != null) {
                 if (isInternetConnected(getContext())) {
-                    loadUsers();
+                    loadSearchResults(); // call search query method
                 } else {
                     Toast.makeText(getContext(), R.string.internet_connection_error,
                             Toast.LENGTH_SHORT).show();
@@ -90,29 +90,27 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
         }
     }
 
-    public void loadUsers() {
+    public void loadSearchResults() {
+
         progressBar.setVisibility(View.VISIBLE);
         users.clear();
         adapter.clearAll();
-        loadSearch(); // call search query method
-    }
-
-
-    public void loadSearch() {
 
         Call<GitHubSearchResult> call = apiService.getUsers(userQuery);
 
         call.enqueue(new Callback<GitHubSearchResult>() {
             @Override
-            public void onResponse(Call<GitHubSearchResult> call, Response<GitHubSearchResult> response) {
+            public void onResponse(@NonNull Call<GitHubSearchResult> call,
+                                   @NonNull Response<GitHubSearchResult> response) {
                 if (response.isSuccessful()) {
                     if (response.body() != null) {
                         // add all items from response.body to users array list
                         usersList.setVisibility(View.VISIBLE);
                         users.addAll(response.body().getItems());
                         for (int i = 0; i < users.size(); i++) {
-                            adapter.add(users);
-                            adapter.notifyDataSetChanged();
+                            loadUser(i);
+                            //adapter.add(users);
+                            //adapter.notifyDataSetChanged();
                         }
 
                         adapter.setOnItemClickListener(new UsersAdapter.OnItemClickListener() {
@@ -120,7 +118,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
                             public void onItemClick(View view, String login, int position) {
                                 currentLogin = login;
 
-                                loadUser(response, position); // call second method
+                                //loadUser(response, position); // call second method
 
                                 ReposFragment reposFragment = new ReposFragment();
                                 Bundle bundle = new Bundle();
@@ -149,9 +147,9 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
         });
     }
 
-    public void loadUser(Response<GitHubSearchResult> gitHubSearchResultResponse, int position) {
-        Call<GitHubUser> callUser = apiService.getUser(gitHubSearchResultResponse.body()
-                .getItems().get(position).getLogin());
+    public void loadUser(int position) {
+
+        Call<GitHubUser> callUser = apiService.getUser(users.get(position).getLogin());
 
         callUser.enqueue(new Callback<GitHubUser>() {
             @Override
@@ -160,7 +158,8 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
                 if (response.code() != CODE_FORBIDDEN) {
                     if (response.body() != null) {
                         usersList.setVisibility(View.VISIBLE);
-                        users.add(response.body());
+                        users.add(position, response.body());
+                        //users.add(response.body());
                         adapter.add(users);
                         adapter.notifyDataSetChanged();
                     } else {
