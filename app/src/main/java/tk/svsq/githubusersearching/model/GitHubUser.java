@@ -1,8 +1,11 @@
 package tk.svsq.githubusersearching.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
-public class GitHubUser {
+public class GitHubUser implements Parcelable{
     @SerializedName("login")
     private String login;
     @SerializedName("name")
@@ -24,7 +27,7 @@ public class GitHubUser {
         this.userBlog = userBlog;
     }
 
-    public GitHubUser() {
+    public GitHubUser(Parcel in) {
 
     }
 
@@ -76,4 +79,30 @@ public class GitHubUser {
     public void setLogin(String login) {
         this.login = login;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(login);
+        parcel.writeString(userName);
+        parcel.writeString(userLocation);
+        parcel.writeString(userAvatar);
+        parcel.writeString(userBlog);
+    }
+
+    public static final Creator CREATOR = new Creator<GitHubUser>() {
+        @Override
+        public GitHubUser createFromParcel(Parcel in) {
+            return new GitHubUser(in);
+        }
+
+        @Override
+        public GitHubUser[] newArray(int size) {
+            return new GitHubUser[size];
+        }
+    };
 }
