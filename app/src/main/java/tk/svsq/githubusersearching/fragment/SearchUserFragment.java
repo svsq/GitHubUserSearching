@@ -1,6 +1,8 @@
 package tk.svsq.githubusersearching.fragment;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -37,8 +39,13 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
     public static final String KEY_NUMBER_REPO = "number_repo";
     public static final int CODE_FORBIDDEN = 403;
 
+    private static final String TAG = SearchUserFragment.class.getSimpleName();
+
     RecyclerView usersList;
     UsersAdapter adapter;
+
+    private LinearLayoutManager verticalLayoutManager;
+    private LinearLayoutManager horizontalLayoutManager;
 
     List<GitHubUser> users;
     List<GitHubUser> logins;
@@ -49,18 +56,50 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
     String userQuery;
     String currentLogin;
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            usersList.setLayoutManager(horizontalLayoutManager);
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            usersList.setLayoutManager(verticalLayoutManager);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putParcelableArrayList("key", (ArrayList<? extends Parcelable>) users);
+        super.onSaveInstanceState(outState);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
+        setRetainInstance(true);
         View root = inflater.inflate(R.layout.fragment_search_user, container, false);
-
-        users = new ArrayList<>();
-        logins = new ArrayList<>();
         usersList = root.findViewById(R.id.fragment_users_list);
-        usersList.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        adapter = new UsersAdapter();
+        if (savedInstanceState == null || !savedInstanceState.containsKey("key")) {
+            users = new ArrayList<>();
+            adapter = new UsersAdapter();
+            usersList.setVisibility(View.GONE);
+
+        } else {
+            users = savedInstanceState.getParcelableArrayList("key");
+            adapter.clearAll();
+            usersList.setAdapter(adapter);
+            adapter.addAll(users);
+            adapter.notifyDataSetChanged();
+            usersList.setVisibility(View.VISIBLE);
+        }
+
+        logins = new ArrayList<>();
+
+        verticalLayoutManager = new LinearLayoutManager(getContext());
+        horizontalLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+
+        usersList.setLayoutManager(verticalLayoutManager);
 
         usersList.setAdapter(adapter);
 
@@ -70,7 +109,6 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
         Button searchButton = root.findViewById(R.id.fragment_search_button);
         searchButton.setOnClickListener(this);
 
-        usersList.setVisibility(View.GONE);
         progressBar.setVisibility(View.GONE);
 
         return root;
