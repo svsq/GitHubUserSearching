@@ -176,8 +176,14 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
     }
 
     public void errorMessage(int code, String message) {
-        Toast.makeText(getContext(), "Error code: " + code + ". " + message,
-                Toast.LENGTH_SHORT).show();
+        if (code == CODE_FORBIDDEN) {
+            Toast.makeText(getContext(), "Error code: " + code
+                            + ". Attempts exceeded for non-autorized person. Please try again later.",
+                    Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getContext(), "Error code: " + code + ". " + message,
+                    Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void errorMessage() {
