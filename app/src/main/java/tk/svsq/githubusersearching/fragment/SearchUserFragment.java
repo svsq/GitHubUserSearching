@@ -34,7 +34,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
     final GitHubCall apiService = GitHubApiClient.getClient().create(GitHubCall.class);
 
     public static final String KEY_CURRENT_LOGIN = "username";
-    //public static final String KEY_NUMBER_REPO = "number_repo";
+    public static final String KEY_NUMBER_REPO = "number_repo";
     public static final int CODE_FORBIDDEN = 403;
 
     RecyclerView usersList;
@@ -69,7 +69,6 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
         editText = root.findViewById(R.id.fragment_search_edittext);
         Button searchButton = root.findViewById(R.id.fragment_search_button);
         searchButton.setOnClickListener(this);
-        //usersList.setOnClickListener(this);
 
         usersList.setVisibility(View.GONE);
         progressBar.setVisibility(View.GONE);
@@ -111,8 +110,6 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
                         logins.addAll(response.body().getItems());
                         for (int i = 0; i < logins.size(); i++) {
                             loadUser(i);
-                            //adapter.add(users);
-                            //adapter.notifyDataSetChanged();
                         }
 
                         adapter.setOnItemClickListener(new UsersAdapter.OnItemClickListener() {
@@ -120,12 +117,11 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
                             public void onItemClick(View view, String login, int position) {
                                 currentLogin = login;
 
-                                //loadUser(response, position); // call second method
 
                                 ReposFragment reposFragment = new ReposFragment();
                                 Bundle bundle = new Bundle();
                                 bundle.putString(KEY_CURRENT_LOGIN, currentLogin);
-                                //bundle.putString(KEY_NUMBER_REPO, numberRepo);
+                                bundle.putString(KEY_NUMBER_REPO, users.get(position).getUserRepos());
                                 reposFragment.setArguments(bundle);
                                 if (getFragmentManager() != null) {
                                     getFragmentManager().beginTransaction()
@@ -161,7 +157,6 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
                     if (response.body() != null) {
                         usersList.setVisibility(View.VISIBLE);
                         users.add(response.body());
-                        //users.add(response.body());
                         adapter.add(users);
                         adapter.notifyDataSetChanged();
                     }
