@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,16 +39,16 @@ public class ReposFragment extends Fragment {
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
 
-        //TextView userNameText = root.findViewById(R.id.ReposFragment_UserName);
+        TextView userNameText = root.findViewById(R.id.ReposFragment_UserName);
         RecyclerView listRepos = root.findViewById(R.id.ReposFragment_ListRepos);
         progressBar = root.findViewById(R.id.ReposFragment_ProgressBar);
 
         Bundle bundle = getArguments();
         currentLogin = bundle.getString(SearchUserFragment.KEY_CURRENT_LOGIN);
-        //String numberRepos = bundle.getString(SearchUserFragment.KEY_NUMBER_REPO);
-        //String titleText = currentLogin + "'s repositories (" + numberRepos + ")";
+        String numberRepos = bundle.getString(SearchUserFragment.KEY_NUMBER_REPO);
+        String titleText = currentLogin + "'s repositories (" + numberRepos + ")";
         // TODO (1): Replace this string to resource with placeholders
-        //userNameText.setText(titleText);
+        userNameText.setText(titleText);
         repoList = new ArrayList<>();
         adapter = new RepoAdapter();
         listRepos.setLayoutManager(linearLayoutManager);
