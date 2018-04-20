@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -58,6 +59,8 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
     String userQuery;
     String currentLogin;
 
+    TextView nothingFoundText;
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -82,6 +85,8 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
         setRetainInstance(true);
         View root = inflater.inflate(R.layout.fragment_search_user, container, false);
         usersList = root.findViewById(R.id.fragment_users_list);
+        nothingFoundText = root.findViewById(R.id.fragment_search_nothing_found);
+        nothingFoundText.setVisibility(View.GONE);
 
         if (savedInstanceState == null || !savedInstanceState.containsKey("key")) {
             users = new ArrayList<>();
@@ -146,6 +151,9 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
                                    @NonNull Response<GitHubSearchResult> response) {
                 if (response.isSuccessful()) {
                     if (response.body() != null) {
+                        if(response.body().getItems().isEmpty()) {
+                            nothingFoundText.setVisibility(View.VISIBLE);
+                        }
                         // add all items from response.body to users array list
                         usersList.setVisibility(View.VISIBLE);
                         logins.addAll(response.body().getItems());
