@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">GitHubUserSearching</string>
+    <string name="app_name">Search users in GitHub</string>
     <string name="search_hint">Type search name here</string>
     <string name="search_button">search</string>
     <string name="internet_connection_error">Network error. Please check your connectivity.</string>
