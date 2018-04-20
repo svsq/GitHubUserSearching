@@ -40,6 +40,8 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
     public static final String KEY_NUMBER_REPO = "number_repo";
     public static final int CODE_FORBIDDEN = 403;
 
+    View root;
+
     RecyclerView usersList;
     UsersAdapter adapter;
 
@@ -80,7 +82,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         setRetainInstance(true);
-        View root = inflater.inflate(R.layout.fragment_search_user, container, false);
+        root = inflater.inflate(R.layout.fragment_search_user, container, false);
         usersList = root.findViewById(R.id.fragment_users_list);
         nothingFoundText = root.findViewById(R.id.fragment_search_nothing_found);
         nothingFoundText.setVisibility(View.GONE);
@@ -165,9 +167,10 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
                             bundle.putString(KEY_NUMBER_REPO, users.get(position).getUserRepos());
                             reposFragment.setArguments(bundle);
                             if (getFragmentManager() != null) {
+                                root.setVisibility(View.GONE);
                                 getFragmentManager().beginTransaction()
-                                        .replace(R.id.fragmentContainer, reposFragment)
                                         .addToBackStack(null)
+                                        .add(R.id.fragmentContainer, reposFragment)
                                         .commit();
                             }
                         });
@@ -221,10 +224,12 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
             Toast.makeText(getContext(), "Error code: " + code + ". " + message,
                     Toast.LENGTH_SHORT).show();
         }
+        progressBar.setVisibility(View.GONE);
     }
 
     public void errorMessage() {
-        Toast.makeText(getContext(), "Error. Request failure.",
+        Toast.makeText(getContext(), "Failed!",
                 Toast.LENGTH_SHORT).show();
+        progressBar.setVisibility(View.GONE);
     }
 }
