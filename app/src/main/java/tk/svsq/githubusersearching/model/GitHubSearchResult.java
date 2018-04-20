@@ -10,10 +10,6 @@ public class GitHubSearchResult implements Serializable {
     @SerializedName("items")
     private List<GitHubUser> items;
 
-    public GitHubSearchResult() {
-
-    }
-
     public GitHubSearchResult(List<GitHubUser> items) {
         this.items = items;
     }
@@ -22,7 +18,4 @@ public class GitHubSearchResult implements Serializable {
         return items;
     }
 
-    public void setItems(List<GitHubUser> items) {
-        this.items = items;
-    }
 }

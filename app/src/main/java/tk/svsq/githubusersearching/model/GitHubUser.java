@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
-public class GitHubUser implements Parcelable{
+public class GitHubUser implements Parcelable {
     @SerializedName("login")
     private String login;
     @SerializedName("name")
@@ -19,15 +19,16 @@ public class GitHubUser implements Parcelable{
     @SerializedName("public_repos")
     private String userRepos;
 
-    public GitHubUser(String login, String userName, String userLocation, String userAvatar, String userBlog) {
+    public GitHubUser(String login, String userName, String userLocation, String userAvatar, String userBlog, String userRepos) {
         this.login = login;
         this.userName = userName;
         this.userLocation = userLocation;
         this.userAvatar = userAvatar;
         this.userBlog = userBlog;
+        this.userRepos = userRepos;
     }
 
-    public GitHubUser(Parcel in) {
+    public GitHubUser(Parcel parcel) {
 
     }
 
@@ -35,33 +36,16 @@ public class GitHubUser implements Parcelable{
         return userName;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-    //TODO (4): Maybe not needed setters here at all
-
     public String getUserLocation() {
         return userLocation;
-    }
-
-    public void setUserLocation(String userLocation) {
-        this.userLocation = userLocation;
     }
 
     public String getUserAvatar() {
         return userAvatar;
     }
 
-    public void setUserAvatar(String userAvatar) {
-        this.userAvatar = userAvatar;
-    }
-
     public String getUserBlog() {
         return userBlog;
-    }
-
-    public void setUserBlog(String userBlog) {
-        this.userBlog = userBlog;
     }
 
     public String getUserRepos() {
@@ -76,10 +60,6 @@ public class GitHubUser implements Parcelable{
         return login;
     }
 
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
     @Override
     public int describeContents() {
         return 0;
@@ -92,12 +72,13 @@ public class GitHubUser implements Parcelable{
         parcel.writeString(userLocation);
         parcel.writeString(userAvatar);
         parcel.writeString(userBlog);
+        parcel.writeString(userRepos);
     }
 
     public static final Creator CREATOR = new Creator<GitHubUser>() {
         @Override
-        public GitHubUser createFromParcel(Parcel in) {
-            return new GitHubUser(in);
+        public GitHubUser createFromParcel(Parcel parcel) {
+            return new GitHubUser(parcel);
         }
 
         @Override

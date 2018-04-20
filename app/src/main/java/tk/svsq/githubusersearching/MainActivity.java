@@ -8,10 +8,6 @@ import tk.svsq.githubusersearching.fragment.SearchUserFragment;
 
 public class MainActivity extends AppCompatActivity {
 
-    private SearchUserFragment fragment;
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -19,9 +15,9 @@ public class MainActivity extends AppCompatActivity {
 
         FragmentManager fm = getSupportFragmentManager();
 
-        fragment = (SearchUserFragment) fm.findFragmentByTag("searchUserFragment");
+        SearchUserFragment fragment = (SearchUserFragment) fm.findFragmentByTag("searchUserFragment");
 
-        if(fragment == null) {
+        if (fragment == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragmentContainer, new SearchUserFragment(), "searchUserFragment")
                     .addToBackStack(null)
