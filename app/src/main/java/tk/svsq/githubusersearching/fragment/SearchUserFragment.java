@@ -39,13 +39,15 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
     public static final String KEY_NUMBER_REPO = "number_repo";
     public static final int CODE_FORBIDDEN = 403;
 
-    private static final String TAG = SearchUserFragment.class.getSimpleName();
+    //private boolean loading = true;
+    //int pastVisibleItems, visibleItemsCount, totalItemCount;
 
     RecyclerView usersList;
     UsersAdapter adapter;
 
     private LinearLayoutManager verticalLayoutManager;
     private LinearLayoutManager horizontalLayoutManager;
+    private LinearLayoutManager currentLayoutManager;
 
     List<GitHubUser> users;
     List<GitHubUser> logins;
@@ -60,10 +62,11 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            usersList.setLayoutManager(horizontalLayoutManager);
+            currentLayoutManager = horizontalLayoutManager;
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            usersList.setLayoutManager(verticalLayoutManager);
+            currentLayoutManager = verticalLayoutManager;
         }
+        usersList.setLayoutManager(currentLayoutManager);
     }
 
     @Override
