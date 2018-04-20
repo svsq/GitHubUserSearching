@@ -29,7 +29,7 @@ public class ReposFragment extends Fragment {
     private ProgressBar progressBar;
 
     private List<GitHubRepo> repoList;
-    private String currentLogin; // TODO (7): Rename this to login
+    private String currentLogin;
     private RepoAdapter adapter;
 
     @Nullable
