@@ -4,4 +4,5 @@
     <string name="search_button">search</string>
     <string name="internet_connection_error">Network error. Please check your connectivity.</string>
     <string name="oops_nothing_found">Oops! Nothing found!</string>
+    <string name="fragment_repo_title">%1$s\'s repositories (%2$s)</string>
 </resources>

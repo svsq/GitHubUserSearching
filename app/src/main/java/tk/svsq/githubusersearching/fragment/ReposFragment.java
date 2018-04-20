@@ -46,8 +46,7 @@ public class ReposFragment extends Fragment {
         Bundle bundle = getArguments();
         currentLogin = bundle.getString(SearchUserFragment.KEY_CURRENT_LOGIN);
         String numberRepos = bundle.getString(SearchUserFragment.KEY_NUMBER_REPO);
-        String titleText = currentLogin + "'s repositories (" + numberRepos + ")";
-        // TODO (1): Replace this string to resource with placeholders
+        String titleText = getString(R.string.fragment_repo_title, currentLogin, numberRepos);
         userNameText.setText(titleText);
         repoList = new ArrayList<>();
         adapter = new RepoAdapter();
@@ -83,4 +82,6 @@ public class ReposFragment extends Fragment {
             }
         });
     }
+
+
 }

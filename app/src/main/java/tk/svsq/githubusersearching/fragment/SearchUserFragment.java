@@ -175,7 +175,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
                                 if (getFragmentManager() != null) {
                                     getFragmentManager().beginTransaction()
                                             .replace(R.id.fragmentContainer, reposFragment)
-                                            .addToBackStack("searchuserfragment")
+                                            .addToBackStack(null)
                                             .commit();
                                 }
                             }
