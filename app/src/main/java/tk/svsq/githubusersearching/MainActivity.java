@@ -10,16 +10,21 @@ public class MainActivity extends AppCompatActivity {
 
     private SearchUserFragment fragment;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         FragmentManager fm = getSupportFragmentManager();
+
         fragment = (SearchUserFragment) fm.findFragmentByTag("searchUserFragment");
 
         if(fragment == null) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragmentContainer, new SearchUserFragment(), "searchUserFragment")
+                    .add(R.id.fragmentContainer, new SearchUserFragment(), "searchUserFragment")
+                    .addToBackStack(null)
                     .commit();
         }
     }
