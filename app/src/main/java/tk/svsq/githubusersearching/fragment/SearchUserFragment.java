@@ -40,9 +40,6 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
     public static final String KEY_NUMBER_REPO = "number_repo";
     public static final int CODE_FORBIDDEN = 403;
 
-    //private boolean loading = true;
-    //int pastVisibleItems, visibleItemsCount, totalItemCount;
-
     RecyclerView usersList;
     UsersAdapter adapter;
 
@@ -132,7 +129,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
             userQuery = editText.getText().toString();
             if (getContext() != null) {
                 if (isInternetConnected(getContext())) {
-                    loadSearchResults(); // call search query method
+                    loadSearchResults();
                 } else {
                     Toast.makeText(getContext(), R.string.internet_connection_error,
                             Toast.LENGTH_SHORT).show();
@@ -151,33 +148,27 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
                                    @NonNull Response<GitHubSearchResult> response) {
                 if (response.isSuccessful()) {
                     if (response.body() != null) {
-                        if(response.body().getItems().isEmpty()) {
+                        if (response.body().getItems().isEmpty()) {
                             nothingFoundText.setVisibility(View.VISIBLE);
                         }
-                        // add all items from response.body to users array list
                         usersList.setVisibility(View.VISIBLE);
                         logins.addAll(response.body().getItems());
                         for (int i = 0; i < logins.size(); i++) {
                             loadUser(i);
                         }
 
-                        adapter.setOnItemClickListener(new UsersAdapter.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(View view, String login, int position) {
-                                currentLogin = login;
-
-
-                                ReposFragment reposFragment = new ReposFragment();
-                                Bundle bundle = new Bundle();
-                                bundle.putString(KEY_CURRENT_LOGIN, currentLogin);
-                                bundle.putString(KEY_NUMBER_REPO, users.get(position).getUserRepos());
-                                reposFragment.setArguments(bundle);
-                                if (getFragmentManager() != null) {
-                                    getFragmentManager().beginTransaction()
-                                            .replace(R.id.fragmentContainer, reposFragment)
-                                            .addToBackStack(null)
-                                            .commit();
-                                }
+                        adapter.setOnItemClickListener((view, login, position) -> {
+                            currentLogin = login;
+                            ReposFragment reposFragment = new ReposFragment();
+                            Bundle bundle = new Bundle();
+                            bundle.putString(KEY_CURRENT_LOGIN, currentLogin);
+                            bundle.putString(KEY_NUMBER_REPO, users.get(position).getUserRepos());
+                            reposFragment.setArguments(bundle);
+                            if (getFragmentManager() != null) {
+                                getFragmentManager().beginTransaction()
+                                        .replace(R.id.fragmentContainer, reposFragment)
+                                        .addToBackStack(null)
+                                        .commit();
                             }
                         });
                     }

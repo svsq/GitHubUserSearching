@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.List;
 import tk.svsq.githubusersearching.R;
 import tk.svsq.githubusersearching.model.GitHubRepo;
 
-public class RepoAdapter extends RecyclerView.Adapter<RepoViewHolder> {
+public class RepoAdapter extends RecyclerView.Adapter<RepoAdapter.RepoViewHolder> {
 
     private List<GitHubRepo> repoList = new ArrayList<>();
 
@@ -40,10 +41,26 @@ public class RepoAdapter extends RecyclerView.Adapter<RepoViewHolder> {
         notifyItemRangeInserted(position, this.repoList.size());
     }
 
-    public void clearAll(List<GitHubRepo> repoList) {
-        int position = getItemCount();
-        this.repoList.clear();
-        notifyItemRangeRemoved(position, this.repoList.size());
+    class RepoViewHolder extends RecyclerView.ViewHolder {
+
+        private TextView repoName;
+        private TextView repoDescription;
+        private TextView repoLanguage;
+
+        RepoViewHolder(View itemView) {
+            super(itemView);
+            repoName = itemView.findViewById(R.id.item_repoName);
+            repoDescription = itemView.findViewById(R.id.item_repoDesc);
+            repoLanguage = itemView.findViewById(R.id.item_repoLanguage);
+        }
+
+        public void bind(GitHubRepo item) {
+            repoName.setText(item.getRepoName());
+            repoDescription.setText(item.getRepoDescription());
+            repoLanguage.setText(item.getRepoLanguage());
+
+        }
     }
 
 }
+

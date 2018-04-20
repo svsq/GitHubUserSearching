@@ -29,7 +29,7 @@ public class ReposFragment extends Fragment {
     private ProgressBar progressBar;
 
     private List<GitHubRepo> repoList;
-    private String currentLogin;
+    private String userLogin;
     private RepoAdapter adapter;
 
     @Nullable
@@ -44,9 +44,9 @@ public class ReposFragment extends Fragment {
         progressBar = root.findViewById(R.id.ReposFragment_ProgressBar);
 
         Bundle bundle = getArguments();
-        currentLogin = bundle.getString(SearchUserFragment.KEY_CURRENT_LOGIN);
+        userLogin = bundle.getString(SearchUserFragment.KEY_CURRENT_LOGIN);
         String numberRepos = bundle.getString(SearchUserFragment.KEY_NUMBER_REPO);
-        String titleText = getString(R.string.fragment_repo_title, currentLogin, numberRepos);
+        String titleText = getString(R.string.fragment_repo_title, userLogin, numberRepos);
         userNameText.setText(titleText);
         repoList = new ArrayList<>();
         adapter = new RepoAdapter();
@@ -61,8 +61,7 @@ public class ReposFragment extends Fragment {
     private void loadRepositories() {
         progressBar.setVisibility(ProgressBar.VISIBLE);
         GitHubCall apiService = GitHubApiClient.getClient().create(GitHubCall.class);
-        Call<List<GitHubRepo>> call = apiService.getRepo(currentLogin);
-        // TODO (6): Do refactoring with replace currentLogin to login or somthing else
+        Call<List<GitHubRepo>> call = apiService.getRepo(userLogin);
         call.enqueue(new Callback<List<GitHubRepo>>() {
             @Override
             public void onResponse(@NonNull Call<List<GitHubRepo>> call, @NonNull Response<List<GitHubRepo>> response) {
@@ -72,7 +71,6 @@ public class ReposFragment extends Fragment {
                     adapter.addAll(repoList);
                     adapter.notifyDataSetChanged();
                 }
-
                 progressBar.setVisibility(ProgressBar.GONE);
             }
 

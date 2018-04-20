@@ -18,5 +18,5 @@ public interface GitHubCall {
     Call<GitHubSearchResult> getUsers(@Query("q") String query);
 
     @GET("/users/{user}")
-    Call<GitHubUser> getUser(@Path("user")String user);
+    Call<GitHubUser> getUser(@Path("user") String user);
 }
