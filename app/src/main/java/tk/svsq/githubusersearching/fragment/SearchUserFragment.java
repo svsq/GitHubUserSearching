@@ -42,6 +42,8 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
 
     View root;
 
+    int page = 1;
+
     Bundle args = new Bundle();
 
     RecyclerView usersList;
@@ -124,8 +126,9 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
 
         verticalLayoutManager = new LinearLayoutManager(getContext());
         horizontalLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        currentLayoutManager = verticalLayoutManager;
 
-        usersList.setLayoutManager(verticalLayoutManager);
+        usersList.setLayoutManager(currentLayoutManager);
 
         usersList.setAdapter(adapter);
 
@@ -161,7 +164,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
 
     public void loadSearchResults() {
 
-        Call<GitHubSearchResult> call = apiService.getUsersPaged(userQuery, null, "8");
+        Call<GitHubSearchResult> call = apiService.getUsersPaged(userQuery, Integer.toString(page), "8");
 
         call.enqueue(new Callback<GitHubSearchResult>() {
             @Override
@@ -204,7 +207,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
                                     if(loading) {
                                         if((visibleItemCount + pastVisiblesItems) >= totalItemCount) {
                                             loading = false;
-                                            // fetch new data
+                                            page++;
                                         }
                                     }
                                 }
