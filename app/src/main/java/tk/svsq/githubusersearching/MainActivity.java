@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
 
         fragment = (SearchUserFragment) fm.findFragmentByTag("searchUserFragment");
 
-        if (fragment == null) {
+        if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragmentContainer, new SearchUserFragment(), "searchUserFragment")
                     .addToBackStack(null)
@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
+    /*@Override
     public void onBackPressed() {
         fm = getSupportFragmentManager();
         if (fm.getBackStackEntryCount() > 0) {
@@ -38,5 +38,5 @@ public class MainActivity extends AppCompatActivity {
             super.onBackPressed();
         }
         //fragment.getView().setVisibility(View.VISIBLE);
-    }
+    }*/
 }

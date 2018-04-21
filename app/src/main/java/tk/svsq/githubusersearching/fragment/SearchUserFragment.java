@@ -42,6 +42,8 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
 
     View root;
 
+    Bundle args = new Bundle();
+
     RecyclerView usersList;
     UsersAdapter adapter;
 
@@ -77,11 +79,25 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
         super.onSaveInstanceState(outState);
     }
 
+    @Override
+    public void onStart() {
+        if(args != null) {
+            users = args.getParcelableArrayList("key");
+            adapter.clearAll();
+            usersList.setAdapter(adapter);
+            adapter.addAll(users);
+            adapter.notifyDataSetChanged();
+            usersList.setVisibility(View.VISIBLE);
+        }
+        super.onStart();
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         setRetainInstance(true);
+        args = savedInstanceState;
         root = inflater.inflate(R.layout.fragment_search_user, container, false);
         usersList = root.findViewById(R.id.fragment_users_list);
         nothingFoundText = root.findViewById(R.id.fragment_search_nothing_found);
@@ -166,13 +182,11 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
                             bundle.putString(KEY_CURRENT_LOGIN, currentLogin);
                             bundle.putString(KEY_NUMBER_REPO, users.get(position).getUserRepos());
                             reposFragment.setArguments(bundle);
-                            if (getFragmentManager() != null) {
-                                root.setVisibility(View.GONE);
-                                getFragmentManager().beginTransaction()
-                                        .addToBackStack(null)
-                                        .add(R.id.fragmentContainer, reposFragment)
-                                        .commit();
-                            }
+                            //root.setVisibility(View.GONE);
+                            getFragmentManager().beginTransaction()
+                                    .replace(R.id.fragmentContainer, reposFragment)
+                                    .addToBackStack(null)
+                                    .commit();
                         });
                     }
                     progressBar.setVisibility(View.GONE);
