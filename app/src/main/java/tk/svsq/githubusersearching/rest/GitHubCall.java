@@ -17,8 +17,12 @@ public interface GitHubCall {
     @GET("/search/users")
     Call<GitHubSearchResult> getUsers(@Query("q") String query);
 
-    /*@GET("/search/users")
-    Call<GitHubSearchResult> getUsersPaged(@Query("q") String query);*/
+    @GET("/search/users")
+    Call<GitHubSearchResult> getUsersPaged(
+            @Query("q") String query,
+            @Query("page") String page,
+            @Query("per_page") String per_page
+    );
 
     @GET("/users/{user}")
     Call<GitHubUser> getUser(@Path("user") String user);

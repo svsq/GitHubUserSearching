@@ -51,6 +51,9 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
     private LinearLayoutManager horizontalLayoutManager;
     private LinearLayoutManager currentLayoutManager;
 
+    private boolean loading = true;
+    int pastVisiblesItems, visibleItemCount, totalItemCount;
+
     List<GitHubUser> users;
     List<GitHubUser> logins;
 
@@ -158,7 +161,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
 
     public void loadSearchResults() {
 
-        Call<GitHubSearchResult> call = apiService.getUsers(userQuery);
+        Call<GitHubSearchResult> call = apiService.getUsersPaged(userQuery, null, "8");
 
         call.enqueue(new Callback<GitHubSearchResult>() {
             @Override
@@ -187,6 +190,27 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
                                     .replace(R.id.fragmentContainer, reposFragment)
                                     .addToBackStack(null)
                                     .commit();
+                        });
+
+                        usersList.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                            @Override
+                            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+
+                                if(dy > 0) {
+                                    visibleItemCount = currentLayoutManager.getChildCount();
+                                    totalItemCount = currentLayoutManager.getItemCount();
+                                    pastVisiblesItems = currentLayoutManager.findFirstVisibleItemPosition();
+
+                                    if(loading) {
+                                        if((visibleItemCount + pastVisiblesItems) >= totalItemCount) {
+                                            loading = false;
+                                            // fetch new data
+                                        }
+                                    }
+                                }
+
+                                super.onScrolled(recyclerView, dx, dy);
+                            }
                         });
                     }
                     progressBar.setVisibility(View.GONE);
