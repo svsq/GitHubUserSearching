@@ -66,9 +66,9 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UsersViewHol
         notifyItemInserted(position);
     }
 
-    public class UsersViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class UsersViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        //private CardView carditem;
+        private CardView carditem;
 
         private ImageView userAvatar;
         private TextView login;
@@ -79,13 +79,13 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UsersViewHol
         public UsersViewHolder(View itemView) {
             super(itemView);
 
-            //carditem = itemView.findViewById(R.id.carditem_user);
+            carditem = itemView.findViewById(R.id.carditem_user);
             userAvatar = itemView.findViewById(R.id.user_avatar);
             name = itemView.findViewById(R.id.user_name);
             login = itemView.findViewById(R.id.user_login);
             location = itemView.findViewById(R.id.user_location);
             blog = itemView.findViewById(R.id.user_blog);
-            //carditem.setOnClickListener(this);
+            carditem.setOnClickListener(this);
         }
 
         public void bind(GitHubUser item) {
@@ -101,10 +101,10 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UsersViewHol
 
         @Override
         public void onClick(View view) {
-            if(UsersAdapter.listener != null) {
+            if (UsersAdapter.listener != null) {
                 //String userLogin = login.getText().toString();
                 UsersAdapter.listener.onItemClick(view, users.get(getAdapterPosition())
-                                .getLogin(), getAdapterPosition());
+                        .getLogin(), getAdapterPosition());
             }
         }
     }

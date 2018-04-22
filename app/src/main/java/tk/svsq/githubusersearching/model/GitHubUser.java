@@ -28,7 +28,7 @@ public class GitHubUser implements Parcelable {
         this.userRepos = userRepos;
     }
 
-    public GitHubUser(Parcel parcel) {
+    public GitHubUser(Parcel in) {
 
     }
 
@@ -52,9 +52,9 @@ public class GitHubUser implements Parcelable {
         return userRepos;
     }
 
-    public void setUserRepos(String userRepos) {
+/*    public void setUserRepos(String userRepos) {
         this.userRepos = userRepos;
-    }
+    }*/
 
     public String getLogin() {
         return login;
@@ -77,8 +77,8 @@ public class GitHubUser implements Parcelable {
 
     public static final Creator CREATOR = new Creator<GitHubUser>() {
         @Override
-        public GitHubUser createFromParcel(Parcel parcel) {
-            return new GitHubUser(parcel);
+        public GitHubUser createFromParcel(Parcel in) {
+            return new GitHubUser(in);
         }
 
         @Override
