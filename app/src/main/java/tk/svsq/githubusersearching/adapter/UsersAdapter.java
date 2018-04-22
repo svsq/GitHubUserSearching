@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,6 +76,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UsersViewHol
         private TextView name;
         private TextView location;
         private TextView blog;
+        private TextView repos;
 
         public UsersViewHolder(View itemView) {
             super(itemView);
@@ -85,6 +87,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UsersViewHol
             login = itemView.findViewById(R.id.user_login);
             location = itemView.findViewById(R.id.user_location);
             blog = itemView.findViewById(R.id.user_blog);
+            repos = itemView.findViewById(R.id.public_repos);
             carditem.setOnClickListener(this);
         }
 
@@ -97,6 +100,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UsersViewHol
             login.setText(item.getLogin());
             location.setText(item.getUserLocation());
             blog.setText(item.getUserBlog());
+            repos.setText(item.getUserRepos() + " repos");
         }
 
         @Override

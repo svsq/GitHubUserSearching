@@ -61,6 +61,13 @@
             android:text="Blog"
             android:textSize="14sp" />
 
+        <TextView
+            android:id="@+id/public_repos"
+            style="@style/TextView_UserCardView"
+            android:layout_below="@id/user_blog"
+            android:text="@string/item_public_repos"
+            android:textSize="12sp" />
+
     </RelativeLayout>
 
 </android.support.v7.widget.CardView>
