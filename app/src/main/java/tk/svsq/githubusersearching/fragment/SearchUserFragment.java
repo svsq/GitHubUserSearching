@@ -39,12 +39,11 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
 
     public static final String KEY_CURRENT_LOGIN = "username";
     public static final String KEY_NUMBER_REPO = "number_repo";
+    public static final String KEY_USERS = "key_users";
     public static final String KEY_PER_PAGE = "5";
     public static final int CODE_FORBIDDEN = 403;
 
     View root;
-
-    Bundle args = new Bundle();
 
     RecyclerView usersList;
     UsersAdapter adapter;
@@ -79,18 +78,8 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
-        outState.putParcelableArrayList("key", (ArrayList<? extends Parcelable>) users);
+        outState.putParcelableArrayList(KEY_USERS, (ArrayList<? extends Parcelable>) users);
         super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public void onStart() {
-        if (args != null) {
-            users = args.getParcelableArrayList("key");
-            clear();
-            usersList.setVisibility(View.VISIBLE);
-        }
-        else { super.onStart(); }
     }
 
     @Nullable
@@ -98,20 +87,20 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         setRetainInstance(true);
-        args = savedInstanceState;
         root = inflater.inflate(R.layout.fragment_search_user, container, false);
         usersList = root.findViewById(R.id.fragment_users_list);
         nothingFoundText = root.findViewById(R.id.fragment_search_nothing_found);
         nothingFoundText.setVisibility(View.GONE);
 
-        if (savedInstanceState == null || !savedInstanceState.containsKey("key")) {
+        if (savedInstanceState == null || !savedInstanceState.containsKey(KEY_USERS)) {
             users = new ArrayList<>();
             adapter = new UsersAdapter();
             usersList.setVisibility(View.GONE);
 
         } else {
-            users = savedInstanceState.getParcelableArrayList("key");
-            clear();
+            users = savedInstanceState.getParcelableArrayList(KEY_USERS);
+            adapter.clearAll();
+            usersList.setAdapter(adapter);
             adapter.addAll(users);
             adapter.notifyDataSetChanged();
             usersList.setVisibility(View.VISIBLE);
@@ -129,7 +118,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
                 // load more data from api
-                if(getContext() != null) {
+                if (getContext() != null) {
                     if (isInternetConnected(getContext())) {
                         callSearchUsers(page);
                     } else {
@@ -140,7 +129,6 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
         };
 
         usersList.addOnScrollListener(scrollListener);
-
         usersList.setAdapter(adapter);
 
         progressBar = root.findViewById(R.id.fragment_search_progressBar);
@@ -159,7 +147,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
         logins.clear();
         adapter.clearAll();
         adapter.notifyDataSetChanged();
-        if(scrollListener != null) {
+        if (scrollListener != null) {
             scrollListener.resetState();
         }
     }
@@ -190,13 +178,17 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
             @Override
             public void onResponse(@NonNull Call<GitHubSearchResult> call,
                                    @NonNull Response<GitHubSearchResult> response) {
-                if (response.isSuccessful()) {
+                if (response.code() != CODE_FORBIDDEN) {
                     if (response.body() != null) {
-                        if (response.body().getItems().isEmpty()) {
+
+                        if (response.body().getTotalcount() == 0) {
                             nothingFoundText.setVisibility(View.VISIBLE);
+                        } else {
+                            nothingFoundText.setVisibility(View.GONE);
                         }
                         usersList.setVisibility(View.VISIBLE);
-                        if(logins.size() < response.body().getTotalcount()) {
+                        if (logins.size() < response.body().getTotalcount() &&
+                                users.size() < response.body().getTotalcount()) {
                             logins.clear();
                             logins.addAll(response.body().getItems());
                             for (int i = 0; i < logins.size(); i++) {
@@ -258,7 +250,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
             if (getFragmentManager() != null) {
                 getFragmentManager().beginTransaction()
                         .replace(R.id.fragmentContainer, reposFragment)
-                        .addToBackStack(null)
+                        .addToBackStack("searchUserFragment")
                         .commit();
             }
         });
@@ -266,18 +258,17 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
 
     public void errorMessage(int code, String message) {
         if (code == CODE_FORBIDDEN) {
-            Toast.makeText(getContext(), "Error code: " + code
-                            + ". Attempts exceeded for non-autorized person. Please try again later.",
-                    Toast.LENGTH_SHORT);
+            Toast.makeText(getContext(), getString(R.string.error_message_403, code),
+                    Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(getContext(), "Error code: " + code + ". " + message,
+            Toast.makeText(getContext(), getString(R.string.error_message_code, code, message),
                     Toast.LENGTH_SHORT).show();
         }
         progressBar.setVisibility(View.GONE);
     }
 
     public void errorMessage() {
-        Toast.makeText(getContext(), "Failed!",
+        Toast.makeText(getContext(), R.string.error_message_failed,
                 Toast.LENGTH_SHORT).show();
         progressBar.setVisibility(View.GONE);
     }
