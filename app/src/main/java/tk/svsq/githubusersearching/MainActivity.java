@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
+    /*@Override
     public void onBackPressed() {
         //fm = getSupportFragmentManager();
         if (fm.getBackStackEntryCount() > 0) {
@@ -47,5 +47,5 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getBaseContext(), R.string.base_activity_press_again_to_exit, Toast.LENGTH_SHORT).show();
         }
         back_pressed_time = System.currentTimeMillis();
-    }
+    }*/
 }

@@ -25,6 +25,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import tk.svsq.githubusersearching.R;
 import tk.svsq.githubusersearching.adapter.UsersAdapter;
+import tk.svsq.githubusersearching.listener.EndlessRecyclerViewScrollListener;
 import tk.svsq.githubusersearching.model.GitHubSearchResult;
 import tk.svsq.githubusersearching.model.GitHubUser;
 import tk.svsq.githubusersearching.rest.GitHubApiClient;
@@ -38,11 +39,10 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
 
     public static final String KEY_CURRENT_LOGIN = "username";
     public static final String KEY_NUMBER_REPO = "number_repo";
+    public static final String KEY_PER_PAGE = "5";
     public static final int CODE_FORBIDDEN = 403;
 
     View root;
-
-    int page = 1;
 
     Bundle args = new Bundle();
 
@@ -53,8 +53,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
     private LinearLayoutManager horizontalLayoutManager;
     private LinearLayoutManager currentLayoutManager;
 
-    private boolean loading = true;
-    int pastVisiblesItems, visibleItemCount, totalItemCount;
+    private EndlessRecyclerViewScrollListener scrollListener;
 
     List<GitHubUser> users;
     List<GitHubUser> logins;
@@ -86,15 +85,12 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
 
     @Override
     public void onStart() {
-        if(args != null) {
+        if (args != null) {
             users = args.getParcelableArrayList("key");
-            adapter.clearAll();
-            usersList.setAdapter(adapter);
-            adapter.addAll(users);
-            adapter.notifyDataSetChanged();
+            clear();
             usersList.setVisibility(View.VISIBLE);
         }
-        super.onStart();
+        else { super.onStart(); }
     }
 
     @Nullable
@@ -115,8 +111,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
 
         } else {
             users = savedInstanceState.getParcelableArrayList("key");
-            adapter.clearAll();
-            usersList.setAdapter(adapter);
+            clear();
             adapter.addAll(users);
             adapter.notifyDataSetChanged();
             usersList.setVisibility(View.VISIBLE);
@@ -129,6 +124,22 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
         currentLayoutManager = verticalLayoutManager;
 
         usersList.setLayoutManager(currentLayoutManager);
+
+        scrollListener = new EndlessRecyclerViewScrollListener(currentLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                // load more data from api
+                if(getContext() != null) {
+                    if (isInternetConnected(getContext())) {
+                        callSearchUsers(page);
+                    } else {
+                        progressBar.setVisibility(View.GONE);
+                    }
+                }
+            }
+        };
+
+        usersList.addOnScrollListener(scrollListener);
 
         usersList.setAdapter(adapter);
 
@@ -143,17 +154,27 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
         return root;
     }
 
+    public void clear() {
+        users.clear();
+        logins.clear();
+        adapter.clearAll();
+        adapter.notifyDataSetChanged();
+        if(scrollListener != null) {
+            scrollListener.resetState();
+        }
+    }
+
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.fragment_search_button) {
             progressBar.setVisibility(View.VISIBLE);
-            users.clear();
-            logins.clear();
-            adapter.clearAll();
+            clear();
             userQuery = editText.getText().toString();
             if (getContext() != null) {
                 if (isInternetConnected(getContext())) {
-                    loadSearchResults();
+                    // do first search
+                    callSearchUsers(1);
+
                 } else {
                     Toast.makeText(getContext(), R.string.internet_connection_error,
                             Toast.LENGTH_SHORT).show();
@@ -162,9 +183,8 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
         }
     }
 
-    public void loadSearchResults() {
-
-        Call<GitHubSearchResult> call = apiService.getUsersPaged(userQuery, Integer.toString(page), "8");
+    public void callSearchUsers(int page) {
+        Call<GitHubSearchResult> call = apiService.getUsersPaged(userQuery, Integer.toString(page), KEY_PER_PAGE);
 
         call.enqueue(new Callback<GitHubSearchResult>() {
             @Override
@@ -176,45 +196,13 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
                             nothingFoundText.setVisibility(View.VISIBLE);
                         }
                         usersList.setVisibility(View.VISIBLE);
-                        logins.addAll(response.body().getItems());
-                        for (int i = 0; i < logins.size(); i++) {
-                            loadUser(i);
-                        }
-
-                        adapter.setOnItemClickListener((view, login, position) -> {
-                            currentLogin = login;
-                            ReposFragment reposFragment = new ReposFragment();
-                            Bundle bundle = new Bundle();
-                            bundle.putString(KEY_CURRENT_LOGIN, currentLogin);
-                            bundle.putString(KEY_NUMBER_REPO, users.get(position).getUserRepos());
-                            reposFragment.setArguments(bundle);
-                            //root.setVisibility(View.GONE);
-                            getFragmentManager().beginTransaction()
-                                    .replace(R.id.fragmentContainer, reposFragment)
-                                    .addToBackStack(null)
-                                    .commit();
-                        });
-
-                        usersList.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                            @Override
-                            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-
-                                if(dy > 0) {
-                                    visibleItemCount = currentLayoutManager.getChildCount();
-                                    totalItemCount = currentLayoutManager.getItemCount();
-                                    pastVisiblesItems = currentLayoutManager.findFirstVisibleItemPosition();
-
-                                    if(loading) {
-                                        if((visibleItemCount + pastVisiblesItems) >= totalItemCount) {
-                                            loading = false;
-                                            page++;
-                                        }
-                                    }
-                                }
-
-                                super.onScrolled(recyclerView, dx, dy);
+                        if(logins.size() < response.body().getTotalcount()) {
+                            logins.clear();
+                            logins.addAll(response.body().getItems());
+                            for (int i = 0; i < logins.size(); i++) {
+                                callUserInfo(i);
                             }
-                        });
+                        }
                     }
                     progressBar.setVisibility(View.GONE);
                 } else {
@@ -227,9 +215,11 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
                 errorMessage();
             }
         });
+
+        fillSearchResults();
     }
 
-    public void loadUser(int position) {
+    public void callUserInfo(int position) {
 
         Call<GitHubUser> callUser = apiService.getUser(logins.get(position).getLogin());
 
@@ -256,11 +246,29 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
         });
     }
 
+    public void fillSearchResults() {
+
+        adapter.setOnItemClickListener((view, login, position) -> {
+            currentLogin = login;
+            ReposFragment reposFragment = new ReposFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString(KEY_CURRENT_LOGIN, currentLogin);
+            bundle.putString(KEY_NUMBER_REPO, users.get(position).getUserRepos());
+            reposFragment.setArguments(bundle);
+            if (getFragmentManager() != null) {
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.fragmentContainer, reposFragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+    }
+
     public void errorMessage(int code, String message) {
         if (code == CODE_FORBIDDEN) {
             Toast.makeText(getContext(), "Error code: " + code
                             + ". Attempts exceeded for non-autorized person. Please try again later.",
-                    Toast.LENGTH_SHORT).show();
+                    Toast.LENGTH_SHORT);
         } else {
             Toast.makeText(getContext(), "Error code: " + code + ". " + message,
                     Toast.LENGTH_SHORT).show();

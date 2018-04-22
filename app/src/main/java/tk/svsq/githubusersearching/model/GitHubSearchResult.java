@@ -10,6 +10,9 @@ public class GitHubSearchResult implements Serializable {
     @SerializedName("items")
     private List<GitHubUser> items;
 
+    @SerializedName("total_count")
+    private int totalCount;
+
     public GitHubSearchResult(List<GitHubUser> items) {
         this.items = items;
     }
@@ -18,4 +21,7 @@ public class GitHubSearchResult implements Serializable {
         return items;
     }
 
+    public int getTotalcount() {
+        return totalCount;
+    }
 }
