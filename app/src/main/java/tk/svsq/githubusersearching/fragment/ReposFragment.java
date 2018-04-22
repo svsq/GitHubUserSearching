@@ -20,6 +20,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import tk.svsq.githubusersearching.R;
 import tk.svsq.githubusersearching.adapter.RepoAdapter;
+import tk.svsq.githubusersearching.listener.EndlessRecyclerViewScrollListener;
 import tk.svsq.githubusersearching.model.GitHubRepo;
 import tk.svsq.githubusersearching.rest.GitHubApiClient;
 import tk.svsq.githubusersearching.rest.GitHubCall;
@@ -32,12 +33,22 @@ public class ReposFragment extends Fragment {
     private String userLogin;
     private RepoAdapter adapter;
 
+    private EndlessRecyclerViewScrollListener scrollListener;
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_repos, container, false);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+
+        scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                loadRepositories(page + 1);
+            }
+        };
 
         TextView userNameText = root.findViewById(R.id.ReposFragment_UserName);
         RecyclerView listRepos = root.findViewById(R.id.ReposFragment_ListRepos);
@@ -52,16 +63,17 @@ public class ReposFragment extends Fragment {
         adapter = new RepoAdapter();
         listRepos.setLayoutManager(linearLayoutManager);
         listRepos.setAdapter(adapter);
+        listRepos.addOnScrollListener(scrollListener);
 
-        loadRepositories();
+        loadRepositories(1);
 
         return root;
     }
 
-    private void loadRepositories() {
+    private void loadRepositories(int page) {
         progressBar.setVisibility(ProgressBar.VISIBLE);
         GitHubCall apiService = GitHubApiClient.getClient().create(GitHubCall.class);
-        Call<List<GitHubRepo>> call = apiService.getRepo(userLogin);
+        Call<List<GitHubRepo>> call = apiService.getRepos(userLogin, Integer.toString(page));
         call.enqueue(new Callback<List<GitHubRepo>>() {
             @Override
             public void onResponse(@NonNull Call<List<GitHubRepo>> call, @NonNull Response<List<GitHubRepo>> response) {

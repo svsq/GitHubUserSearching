@@ -11,14 +11,14 @@ import tk.svsq.githubusersearching.model.GitHubSearchResult;
 import tk.svsq.githubusersearching.model.GitHubUser;
 
 public interface GitHubCall {
+
     @GET("/users/{login}/repos")
-    Call<List<GitHubRepo>> getRepo(@Path("login") String name);
+    Call<List<GitHubRepo>> getRepos(
+            @Path("login") String name,
+            @Query("page") String page);
 
     @GET("/search/users")
-    Call<GitHubSearchResult> getUsers(@Query("q") String query);
-
-    @GET("/search/users")
-    Call<GitHubSearchResult> getUsersPaged(
+    Call<GitHubSearchResult> getUsers(
             @Query("q") String query,
             @Query("page") String page,
             @Query("per_page") String per_page

@@ -184,7 +184,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
     }
 
     public void callSearchUsers(int page) {
-        Call<GitHubSearchResult> call = apiService.getUsersPaged(userQuery, Integer.toString(page), KEY_PER_PAGE);
+        Call<GitHubSearchResult> call = apiService.getUsers(userQuery, Integer.toString(page), KEY_PER_PAGE);
 
         call.enqueue(new Callback<GitHubSearchResult>() {
             @Override
