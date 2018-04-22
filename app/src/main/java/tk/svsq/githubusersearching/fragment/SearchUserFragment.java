@@ -89,8 +89,9 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
             users = args.getParcelableArrayList("key");
             clear();
             usersList.setVisibility(View.VISIBLE);
+        } else {
+            super.onStart();
         }
-        else { super.onStart(); }
     }
 
     @Nullable
@@ -129,7 +130,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
                 // load more data from api
-                if(getContext() != null) {
+                if (getContext() != null) {
                     if (isInternetConnected(getContext())) {
                         callSearchUsers(page);
                     } else {
@@ -159,7 +160,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
         logins.clear();
         adapter.clearAll();
         adapter.notifyDataSetChanged();
-        if(scrollListener != null) {
+        if (scrollListener != null) {
             scrollListener.resetState();
         }
     }
@@ -192,11 +193,14 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
                                    @NonNull Response<GitHubSearchResult> response) {
                 if (response.isSuccessful()) {
                     if (response.body() != null) {
-                        if (response.body().getItems().isEmpty()) {
+
+                        if (response.body().getTotalcount() == 0) {
                             nothingFoundText.setVisibility(View.VISIBLE);
+                        } else {
+                            nothingFoundText.setVisibility(View.GONE);
                         }
                         usersList.setVisibility(View.VISIBLE);
-                        if(logins.size() < response.body().getTotalcount()) {
+                        if (logins.size() < response.body().getTotalcount()) {
                             logins.clear();
                             logins.addAll(response.body().getItems());
                             for (int i = 0; i < logins.size(); i++) {
