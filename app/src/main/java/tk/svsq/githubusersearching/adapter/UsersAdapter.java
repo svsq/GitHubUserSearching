@@ -106,7 +106,6 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UsersViewHol
         @Override
         public void onClick(View view) {
             if (UsersAdapter.listener != null) {
-                //String userLogin = login.getText().toString();
                 UsersAdapter.listener.onItemClick(view, users.get(getAdapterPosition())
                         .getLogin(), getAdapterPosition());
             }

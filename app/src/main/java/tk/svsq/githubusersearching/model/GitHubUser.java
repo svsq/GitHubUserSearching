@@ -52,10 +52,6 @@ public class GitHubUser implements Parcelable {
         return userRepos;
     }
 
-/*    public void setUserRepos(String userRepos) {
-        this.userRepos = userRepos;
-    }*/
-
     public String getLogin() {
         return login;
     }
