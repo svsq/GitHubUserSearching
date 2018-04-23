@@ -17,30 +17,17 @@ public class GitHubRepo {
         this.repoLanguage = repoLanguage;
     }
 
-    public GitHubRepo() {
-    }
 
     public String getRepoName() {
         return repoName;
-    }
-
-    public void setRepoName(String repoName) {
-        this.repoName = repoName;
     }
 
     public String getRepoDescription() {
         return repoDescription;
     }
 
-    public void setRepoDescription(String repoDescription) {
-        this.repoDescription = repoDescription;
-    }
-
     public String getRepoLanguage() {
         return repoLanguage;
     }
 
-    public void setRepoLanguage(String repoLanguage) {
-        this.repoLanguage = repoLanguage;
-    }
 }

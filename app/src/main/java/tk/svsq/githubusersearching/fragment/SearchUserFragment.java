@@ -42,8 +42,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
     public static final String KEY_USERS = "key_users";
     public static final String KEY_PER_PAGE = "5";
     public static final int CODE_FORBIDDEN = 403;
-
-    View root;
+    public static final int FIRST_PAGE = 1;
 
     RecyclerView usersList;
     UsersAdapter adapter;
@@ -87,7 +86,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         setRetainInstance(true);
-        root = inflater.inflate(R.layout.fragment_search_user, container, false);
+        View root = inflater.inflate(R.layout.fragment_search_user, container, false);
         usersList = root.findViewById(R.id.fragment_users_list);
         nothingFoundText = root.findViewById(R.id.fragment_search_nothing_found);
         nothingFoundText.setVisibility(View.GONE);
@@ -161,7 +160,7 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
             if (getContext() != null) {
                 if (isInternetConnected(getContext())) {
                     // do first search
-                    callSearchUsers(1);
+                    callSearchUsers(FIRST_PAGE);
 
                 } else {
                     Toast.makeText(getContext(), R.string.internet_connection_error,
@@ -180,7 +179,6 @@ public class SearchUserFragment extends Fragment implements View.OnClickListener
                                    @NonNull Response<GitHubSearchResult> response) {
                 if (response.code() != CODE_FORBIDDEN) {
                     if (response.body() != null) {
-
                         if (response.body().getTotalcount() == 0) {
                             nothingFoundText.setVisibility(View.VISIBLE);
                         } else {

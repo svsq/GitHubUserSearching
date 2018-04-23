@@ -27,6 +27,8 @@ import tk.svsq.githubusersearching.rest.GitHubCall;
 
 public class ReposFragment extends Fragment {
 
+    public static final int FIRST_PAGE = 1;
+
     private ProgressBar progressBar;
 
     private List<GitHubRepo> repoList;
@@ -65,7 +67,7 @@ public class ReposFragment extends Fragment {
         listRepos.setAdapter(adapter);
         listRepos.addOnScrollListener(scrollListener);
 
-        loadRepositories(1);
+        loadRepositories(FIRST_PAGE);
 
         return root;
     }
